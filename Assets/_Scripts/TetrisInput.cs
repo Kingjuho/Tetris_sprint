@@ -102,7 +102,16 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Rotate"",
+                    ""name"": ""RotateLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""5e3a9612-178f-4776-a123-a369fb1f652a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateRight"",
                     ""type"": ""Button"",
                     ""id"": ""90227fa8-951e-4bfb-91e0-1ac9bfbd3462"",
                     ""expectedControlType"": """",
@@ -111,9 +120,27 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Drop"",
+                    ""name"": ""SoftDrop"",
                     ""type"": ""Button"",
                     ""id"": ""8a9fb7cd-38af-4f84-a90e-8eabeb0b1812"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HardDrop"",
+                    ""type"": ""Button"",
+                    ""id"": ""5516096d-1145-4b44-b8e9-2085567de49c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hold"",
+                    ""type"": ""Button"",
+                    ""id"": ""de128d58-2009-4e56-b7fc-b1b539644e42"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -156,23 +183,12 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""e182b2b5-434f-4a95-bcaa-3c1aee1c5d56"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Rotate"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""65cbc3e5-d11e-466e-b8e1-6b03d90e72e4"",
                     ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotate"",
+                    ""action"": ""RotateRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -183,7 +199,40 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Drop"",
+                    ""action"": ""SoftDrop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e182b2b5-434f-4a95-bcaa-3c1aee1c5d56"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d9ea4f45-0072-4084-a280-04852c009eec"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""HardDrop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b225353a-fcdc-413a-b591-a3cd8a998ed4"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -195,8 +244,11 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
-        m_Gameplay_Rotate = m_Gameplay.FindAction("Rotate", throwIfNotFound: true);
-        m_Gameplay_Drop = m_Gameplay.FindAction("Drop", throwIfNotFound: true);
+        m_Gameplay_RotateLeft = m_Gameplay.FindAction("RotateLeft", throwIfNotFound: true);
+        m_Gameplay_RotateRight = m_Gameplay.FindAction("RotateRight", throwIfNotFound: true);
+        m_Gameplay_SoftDrop = m_Gameplay.FindAction("SoftDrop", throwIfNotFound: true);
+        m_Gameplay_HardDrop = m_Gameplay.FindAction("HardDrop", throwIfNotFound: true);
+        m_Gameplay_Hold = m_Gameplay.FindAction("Hold", throwIfNotFound: true);
     }
 
     ~@TetrisInput()
@@ -278,8 +330,11 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Gameplay;
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_Move;
-    private readonly InputAction m_Gameplay_Rotate;
-    private readonly InputAction m_Gameplay_Drop;
+    private readonly InputAction m_Gameplay_RotateLeft;
+    private readonly InputAction m_Gameplay_RotateRight;
+    private readonly InputAction m_Gameplay_SoftDrop;
+    private readonly InputAction m_Gameplay_HardDrop;
+    private readonly InputAction m_Gameplay_Hold;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -296,13 +351,25 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
         /// <summary>
-        /// Provides access to the underlying input action "Gameplay/Rotate".
+        /// Provides access to the underlying input action "Gameplay/RotateLeft".
         /// </summary>
-        public InputAction @Rotate => m_Wrapper.m_Gameplay_Rotate;
+        public InputAction @RotateLeft => m_Wrapper.m_Gameplay_RotateLeft;
         /// <summary>
-        /// Provides access to the underlying input action "Gameplay/Drop".
+        /// Provides access to the underlying input action "Gameplay/RotateRight".
         /// </summary>
-        public InputAction @Drop => m_Wrapper.m_Gameplay_Drop;
+        public InputAction @RotateRight => m_Wrapper.m_Gameplay_RotateRight;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/SoftDrop".
+        /// </summary>
+        public InputAction @SoftDrop => m_Wrapper.m_Gameplay_SoftDrop;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/HardDrop".
+        /// </summary>
+        public InputAction @HardDrop => m_Wrapper.m_Gameplay_HardDrop;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/Hold".
+        /// </summary>
+        public InputAction @Hold => m_Wrapper.m_Gameplay_Hold;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -332,12 +399,21 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @Rotate.started += instance.OnRotate;
-            @Rotate.performed += instance.OnRotate;
-            @Rotate.canceled += instance.OnRotate;
-            @Drop.started += instance.OnDrop;
-            @Drop.performed += instance.OnDrop;
-            @Drop.canceled += instance.OnDrop;
+            @RotateLeft.started += instance.OnRotateLeft;
+            @RotateLeft.performed += instance.OnRotateLeft;
+            @RotateLeft.canceled += instance.OnRotateLeft;
+            @RotateRight.started += instance.OnRotateRight;
+            @RotateRight.performed += instance.OnRotateRight;
+            @RotateRight.canceled += instance.OnRotateRight;
+            @SoftDrop.started += instance.OnSoftDrop;
+            @SoftDrop.performed += instance.OnSoftDrop;
+            @SoftDrop.canceled += instance.OnSoftDrop;
+            @HardDrop.started += instance.OnHardDrop;
+            @HardDrop.performed += instance.OnHardDrop;
+            @HardDrop.canceled += instance.OnHardDrop;
+            @Hold.started += instance.OnHold;
+            @Hold.performed += instance.OnHold;
+            @Hold.canceled += instance.OnHold;
         }
 
         /// <summary>
@@ -352,12 +428,21 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @Rotate.started -= instance.OnRotate;
-            @Rotate.performed -= instance.OnRotate;
-            @Rotate.canceled -= instance.OnRotate;
-            @Drop.started -= instance.OnDrop;
-            @Drop.performed -= instance.OnDrop;
-            @Drop.canceled -= instance.OnDrop;
+            @RotateLeft.started -= instance.OnRotateLeft;
+            @RotateLeft.performed -= instance.OnRotateLeft;
+            @RotateLeft.canceled -= instance.OnRotateLeft;
+            @RotateRight.started -= instance.OnRotateRight;
+            @RotateRight.performed -= instance.OnRotateRight;
+            @RotateRight.canceled -= instance.OnRotateRight;
+            @SoftDrop.started -= instance.OnSoftDrop;
+            @SoftDrop.performed -= instance.OnSoftDrop;
+            @SoftDrop.canceled -= instance.OnSoftDrop;
+            @HardDrop.started -= instance.OnHardDrop;
+            @HardDrop.performed -= instance.OnHardDrop;
+            @HardDrop.canceled -= instance.OnHardDrop;
+            @Hold.started -= instance.OnHold;
+            @Hold.performed -= instance.OnHold;
+            @Hold.canceled -= instance.OnHold;
         }
 
         /// <summary>
@@ -406,18 +491,39 @@ public partial class @TetrisInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMove(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Rotate" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "RotateLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRotate(InputAction.CallbackContext context);
+        void OnRotateLeft(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Drop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "RotateRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnDrop(InputAction.CallbackContext context);
+        void OnRotateRight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SoftDrop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSoftDrop(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "HardDrop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHardDrop(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hold" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHold(InputAction.CallbackContext context);
     }
 }

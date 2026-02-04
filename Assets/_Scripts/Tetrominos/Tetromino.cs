@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class Tetromino : MonoBehaviour
 {
@@ -60,16 +61,22 @@ public class Tetromino : MonoBehaviour
     {
         _input.Enable();
         _input.Gameplay.Move.performed += OnMovePerformed;
-        _input.Gameplay.Rotate.performed += OnRotatePerformed;
-        _input.Gameplay.Drop.performed += OnDropPerformed;
+        _input.Gameplay.RotateLeft.performed += OnRotateLeftPerformed;
+        _input.Gameplay.RotateRight.performed += OnRotateRightPerformed;
+        _input.Gameplay.SoftDrop.performed += OnSoftDropPerformed;
+        _input.Gameplay.HardDrop.performed += OnHardDropPerformed;
+        _input.Gameplay.Hold.performed += OnHoldPerformed;
     }
 
     /** 이벤트 해제 **/
     void OnDisable()
     {
         _input.Gameplay.Move.performed -= OnMovePerformed;
-        _input.Gameplay.Rotate.performed -= OnRotatePerformed;
-        _input.Gameplay.Drop.performed -= OnDropPerformed;
+        _input.Gameplay.RotateLeft.performed -= OnRotateLeftPerformed;
+        _input.Gameplay.RotateRight.performed -= OnRotateRightPerformed;
+        _input.Gameplay.SoftDrop.performed -= OnSoftDropPerformed;
+        _input.Gameplay.HardDrop.performed -= OnHardDropPerformed;
+        _input.Gameplay.Hold.performed -= OnHoldPerformed;
         _input.Disable();
     }
 
@@ -84,21 +91,39 @@ public class Tetromino : MonoBehaviour
             Move(new Vector3(Mathf.Sign(input.x), 0, 0));
     }
     /** 회전 **/
-    void OnRotatePerformed(InputAction.CallbackContext ctx)
+    void OnRotateRightPerformed(InputAction.CallbackContext ctx)
     {
-        // TODO: 회전 방향을 입력에 따라 다르게 할 수 있어야 함
-        transform.Rotate(0, 0, -90);
-        if (!Board.Instance.IsValidPosition(transform))
-        {
-            // 유효하지 않은 위치라면 원래대로 복구
-            transform.Rotate(0, 0, 90);
-        }
+        Rotate(-90);
     }
-    /** 수동 낙하 **/
-    void OnDropPerformed(InputAction.CallbackContext ctx)
+    void OnRotateLeftPerformed(InputAction.CallbackContext ctx)
     {
+        Rotate(90);
+    }
+    /** 소프트 드롭 **/
+    void OnSoftDropPerformed(InputAction.CallbackContext ctx)
+    {
+        // 한 칸 아래로 이동 후 타이머 리셋
         Move(Vector3.down);
-        _lastFallTime = Time.time;  // 타이머 리셋
+        _lastFallTime = Time.time;
+    }
+    /** 하드 드롭 **/
+    void OnHardDropPerformed(InputAction.CallbackContext ctx)
+    {
+        // 가능한 한 아래로 이동
+        while (Board.Instance.IsValidPosition(transform))
+            transform.position += Vector3.down;
+
+        // 마지막 유효 위치로 복구
+        transform.position += Vector3.up;
+
+        // 고정
+        Lock();
+    }
+    /** 홀드 **/
+    void OnHoldPerformed(InputAction.CallbackContext ctx)
+    {
+        if (Spawner.Instance != null)
+            Spawner.Instance.HoldTetromino(this);
     }
 
     /** 이동 시도 함수 **/
@@ -113,6 +138,18 @@ public class Tetromino : MonoBehaviour
             transform.position -= pos;
 
             if (pos == Vector3.down) Lock();
+        }
+    }
+
+    /** 테트로미노 회전 함수 **/
+    void Rotate(float angle)
+    {
+        transform.Rotate(0, 0, angle);
+        if (!Board.Instance.IsValidPosition(transform))
+        {
+            // TODO: SRS(Wall Kick) 구현 예정
+            // 유효하지 않으면 원상복구
+            transform.Rotate(0, 0, -angle);
         }
     }
 

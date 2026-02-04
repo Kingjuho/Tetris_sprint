@@ -16,7 +16,16 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Rotate",
+                    "name": "RotateLeft",
+                    "type": "Button",
+                    "id": "5e3a9612-178f-4776-a123-a369fb1f652a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RotateRight",
                     "type": "Button",
                     "id": "90227fa8-951e-4bfb-91e0-1ac9bfbd3462",
                     "expectedControlType": "",
@@ -25,9 +34,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Drop",
+                    "name": "SoftDrop",
                     "type": "Button",
                     "id": "8a9fb7cd-38af-4f84-a90e-8eabeb0b1812",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HardDrop",
+                    "type": "Button",
+                    "id": "5516096d-1145-4b44-b8e9-2085567de49c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hold",
+                    "type": "Button",
+                    "id": "de128d58-2009-4e56-b7fc-b1b539644e42",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -70,23 +97,12 @@
                 },
                 {
                     "name": "",
-                    "id": "e182b2b5-434f-4a95-bcaa-3c1aee1c5d56",
-                    "path": "<Keyboard>/z",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Rotate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "65cbc3e5-d11e-466e-b8e1-6b03d90e72e4",
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotate",
+                    "action": "RotateRight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -97,7 +113,40 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drop",
+                    "action": "SoftDrop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e182b2b5-434f-4a95-bcaa-3c1aee1c5d56",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d9ea4f45-0072-4084-a280-04852c009eec",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HardDrop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b225353a-fcdc-413a-b591-a3cd8a998ed4",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hold",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
