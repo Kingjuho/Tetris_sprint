@@ -9,7 +9,7 @@ public class Tetromino : MonoBehaviour
     TetrisInput _input;  // 인풋 시스템
     float _lastFallTime;    // 마지막 낙하 시간
 
-    private void Awake()
+    void Awake()
     {
         _input = new TetrisInput();
     }
@@ -39,13 +39,18 @@ public class Tetromino : MonoBehaviour
         }
     }
 
-    private void Start()
+    void Update()
     {
-        Initialize(TetrominoType.T);
+        // 일정 시간마다 자동 낙하
+        if (Time.time - _lastFallTime >= 1.0f)
+        {
+            Move(Vector3.down);
+            _lastFallTime = Time.time;
+        }
     }
 
     /** 이벤트 등록 **/
-    private void OnEnable()
+    void OnEnable()
     {
         _input.Enable();
         _input.Gameplay.Move.performed += OnMovePerformed;
@@ -54,7 +59,7 @@ public class Tetromino : MonoBehaviour
     }
 
     /** 이벤트 해제 **/
-    private void OnDisable()
+    void OnDisable()
     {
         _input.Gameplay.Move.performed -= OnMovePerformed;
         _input.Gameplay.Rotate.performed -= OnRotatePerformed;
@@ -90,18 +95,8 @@ public class Tetromino : MonoBehaviour
         _lastFallTime = Time.time;  // 타이머 리셋
     }
 
-    private void Update()
-    {
-        // 일정 시간마다 자동 낙하
-        if (Time.time - _lastFallTime >= 1.0f)
-        {
-            Move(Vector3.down);
-            _lastFallTime = Time.time;
-        }
-    }
-
     /** 이동 시도 함수 **/
-    private void Move(Vector3 pos)
+    void Move(Vector3 pos)
     {
         // 이동 시도
         transform.position += pos;
@@ -111,11 +106,27 @@ public class Tetromino : MonoBehaviour
         {
             transform.position -= pos;
 
-            if (pos.y < 0)
-            {
-                // TODO: Board에 블록 고정 및 새로운 Piece 생성 로직 추가
-                enabled = false; // 더 이상 이동 불가, Piece 비활성화
-            }
+            if (pos == Vector3.down) Lock();
         }
+    }
+
+    /** 테트로미노 고정 함수 **/
+    void Lock()
+    {
+        foreach (Transform cell in cells)
+        {
+            // 그리드에 블록 고정
+            Vector2 pos = Board.Instance.RoundVector2(cell.position);
+            Board.Instance.grid[(int)pos.x, (int)pos.y] = cell;
+
+            // TODO: 줄 삭제 체크
+
+            this.enabled = false; // 테트로미노 스크립트 비활성화(임시)
+
+        }
+
+        // 다음 테트로미노 스폰
+        if (Spawner.Instance != null)
+            Spawner.Instance.SpawnNextTetromino();
     }
 }

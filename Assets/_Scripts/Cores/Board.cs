@@ -14,7 +14,7 @@ public class Board : MonoBehaviour
     // 그리드 배열
     public Transform[,] grid;
 
-    private void Awake()
+    void Awake()
     {
         if (Instance != null && Instance != this)
         {
