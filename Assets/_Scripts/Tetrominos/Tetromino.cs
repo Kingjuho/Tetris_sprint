@@ -21,6 +21,9 @@ public class Tetromino : MonoBehaviour
         data = new TetrominoData { type = tetromino };
         data.Initialize();
 
+        // 색상 설정
+        Color color = Data.Colors[tetromino];
+
         // 셀 초기화
         if (cells == null) cells = new Transform[4];
 
@@ -36,6 +39,9 @@ public class Tetromino : MonoBehaviour
 
             // 셀 위치 설정
             cells[i].localPosition = (Vector3Int)data.cells[i];
+
+            // 셀 색상 설정
+            cell.GetComponent<SpriteRenderer>().color = color;
         }
     }
 
