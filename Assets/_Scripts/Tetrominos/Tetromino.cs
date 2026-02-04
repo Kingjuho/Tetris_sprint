@@ -125,11 +125,13 @@ public class Tetromino : MonoBehaviour
             Vector2 pos = Board.Instance.RoundVector2(cell.position);
             Board.Instance.grid[(int)pos.x, (int)pos.y] = cell;
 
-            // TODO: 줄 삭제 체크
-
-            this.enabled = false; // 테트로미노 스크립트 비활성화(임시)
-
         }
+        
+        // 줄 삭제 체크
+        Board.Instance.ClearLines();
+
+        // 테트로미노 스크립트 비활성화(임시)
+        this.enabled = false;
 
         // 다음 테트로미노 스폰
         if (Spawner.Instance != null)

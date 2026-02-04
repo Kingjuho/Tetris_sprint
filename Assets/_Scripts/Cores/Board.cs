@@ -54,4 +54,63 @@ public class Board : MonoBehaviour
 
         return true;
     }
+
+    /** 줄 삭제 메인 함수 **/
+    public void ClearLines()
+    {
+        // 바닥부터 모든 행 검사
+        for (int y = 0; y < height; y++)
+        {
+            if (IsLineFull(y))
+            {
+                ClearLine(y);
+                MoveRowsDown(y);
+                y--;
+            }
+        }
+    }
+
+    /** 특정 행이 꽉 찼는지 검사 **/
+    bool IsLineFull(int y)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            // 비어있는 칸이 하나라도 있으면 false 반환
+            if (grid[x, y] == null)
+                return false;
+        }
+
+        return true;
+    }
+
+    /** 특정 행 삭제 **/
+    void ClearLine(int y)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            // 블록 오브젝트 삭제 및 그리드 초기화
+            Destroy(grid[x, y].gameObject);
+            grid[x, y] = null;
+        }
+    }
+
+    /** 특정 행 위의 모든 행을 한 칸씩 내리기 **/
+    void MoveRowsDown(int emptyRow)
+    {
+        for (int y = emptyRow + 1; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                // 빈 칸 건너뛰기
+                if (grid[x, y] == null) continue;
+
+                // 블록을 한 칸 아래로 이동
+                grid[x, y - 1] = grid[x, y];
+                grid[x, y] = null;
+
+                // 실제 위치 업데이트
+                grid[x, y - 1].position += Vector3.down;
+            }
+        }
+    }
 }
