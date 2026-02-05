@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class Spawner : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class Spawner : MonoBehaviour
 
     // 테트로미노 프리팹
     public GameObject tetrominoPrefab;
+
+    // 7-Bag 데이터
+    Stack<TetrominoType> _bag = new Stack<TetrominoType>();
 
     // 홀드 데이터
     TetrominoType _heldType;    // 홀드된 테트로미노 타입
@@ -53,8 +57,38 @@ public class Spawner : MonoBehaviour
     /** 테트로미노 랜덤 생성 함수 **/
     TetrominoType GetRandomTetromino()
     {
-        // TODO: 나중에 7-Bag 알고리즘으로 변경
-        return (TetrominoType)Random.Range(0, 7);
+        // 리스트 안에 아무것도 없으면 리필
+        if (_bag.Count == 0) RefillBag();
+
+        return _bag.Pop();
+    }
+
+    /** 7-Bag 리필 함수 **/
+    void RefillBag()
+    {
+        // 임시 배열 생성
+        TetrominoType[] tempArray = new TetrominoType[7];
+
+        // 배열에 모든 테트로미노 타입 추가
+        for (int i = 0; i < tempArray.Length; i++)
+            tempArray[i] = (TetrominoType)i;
+
+        // 셔플(피셔 예이츠 알고리즘)
+        int n = tempArray.Length;
+
+        while (n > 1)
+        {
+            n--;
+
+            // 0부터 n 사이의 무작위 인덱스 선택
+            int k = Random.Range(0, n + 1);
+
+            // 스왑
+            (tempArray[k], tempArray[n]) = (tempArray[n], tempArray[k]);
+        }
+
+        // 셔플된 배열을 스택으로 변환
+        _bag = new Stack<TetrominoType>(tempArray);
     }
 
     /** 현재 테트로미노 홀드 함수 **/
