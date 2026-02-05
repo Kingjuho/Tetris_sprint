@@ -105,8 +105,6 @@ public class Tetromino : MonoBehaviour
     /** 좌우 이동 **/
     void OnMovePerformed(InputAction.CallbackContext ctx)
     {
-        Debug.Log($"Input Received: {ctx.ReadValue<Vector2>()}");
-
         Vector2 input = ctx.ReadValue<Vector2>();
         if (Mathf.Abs(input.x) > 0.5f) 
             Move(new Vector3(Mathf.Sign(input.x), 0, 0));

@@ -21,7 +21,7 @@ public class Ghost : MonoBehaviour
             // 반투명하게 설정
             SpriteRenderer sprite = go.GetComponent<SpriteRenderer>();
             Color color = original.cells[i].GetComponent<SpriteRenderer>().color;
-            color.a = 0.3f;
+            color.a = 0.1f;
             sprite.color = color;
         }
     }
