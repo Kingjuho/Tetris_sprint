@@ -7,12 +7,14 @@ public class Tetromino : MonoBehaviour
     public TetrominoData data { get; private set; } // 테트로미노 데이터
     public Transform[] cells { get; private set; } // 테트로미노 블록 4개
 
-    TetrisInput _input;  // 인풋 시스템
+    TetrisInput _input;     // 인풋 시스템
     float _lastFallTime;    // 마지막 낙하 시간
+    Ghost _ghost;           // 고스트 테트로미노
 
     void Awake()
     {
         _input = new TetrisInput();
+        _lastFallTime = Time.time;
     }
 
     /** 초기화 함수 **/
@@ -44,6 +46,14 @@ public class Tetromino : MonoBehaviour
             // 셀 색상 설정
             cell.GetComponent<SpriteRenderer>().color = color;
         }
+
+        // 고스트 테트로미노 생성 및 초기화
+        if (_ghost != null) Destroy(_ghost.gameObject);
+
+        GameObject ghostObj = new GameObject("Ghost");
+        _ghost = ghostObj.AddComponent<Ghost>();
+
+        _ghost.Initialize(this);
     }
 
     void Update()
@@ -54,6 +64,10 @@ public class Tetromino : MonoBehaviour
             Move(Vector3.down);
             _lastFallTime = Time.time;
         }
+
+        // 고스트 위치 업데이트
+        if (_ghost != null)
+            _ghost.UpdateGhostPosition(transform);
     }
 
     /** 이벤트 등록 **/
@@ -78,6 +92,13 @@ public class Tetromino : MonoBehaviour
         _input.Gameplay.HardDrop.performed -= OnHardDropPerformed;
         _input.Gameplay.Hold.performed -= OnHoldPerformed;
         _input.Disable();
+    }
+
+    /** 오브젝트 파괴 시 콜백 함수 **/
+    void OnDestroy()
+    {
+        // 고스트 오브젝트 파괴
+        if (_ghost != null) Destroy(_ghost.gameObject);
     }
 
     /**** 콜백 함수 ****/
@@ -169,6 +190,9 @@ public class Tetromino : MonoBehaviour
 
         // 테트로미노 스크립트 비활성화(임시)
         this.enabled = false;
+
+        // 고스트 오브젝트 파괴
+        if (_ghost != null) Destroy(_ghost.gameObject);
 
         // 다음 테트로미노 스폰
         if (Spawner.Instance != null)
