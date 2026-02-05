@@ -11,6 +11,21 @@ public class Tetromino : MonoBehaviour
     float _lastFallTime;    // 마지막 낙하 시간
     Ghost _ghost;           // 고스트 테트로미노
 
+    [Header("조작감 설정")]
+    [SerializeField] float _dasDelay = 0.2f;        // DAS
+    [SerializeField] float _arrDelay = 0.02f;       // ARR
+    [SerializeField] float _softDropSpeed = 0.1f;   // ARR(Soft Drop)
+    [SerializeField] float _lockDelay = 0.5f;       // Extended Placement
+
+    // 타이머
+    float _moveTimer;       // ARR 타이머
+    float _softDropTimer;   // ARR(Soft Drop) 타이머
+    float _lockTimer;       // Lock 타이머
+
+    // 이전 프레임의 입력 상태
+    int _prevX;             
+    bool _isSoftDropping;
+
     void Awake()
     {
         _input = new TetrisInput();
@@ -68,16 +83,91 @@ public class Tetromino : MonoBehaviour
         // 고스트 위치 업데이트
         if (_ghost != null)
             _ghost.UpdateGhostPosition(transform);
+
+        // 입력 처리
+        HandleMoveInput();
+        HandleSoftDropInput();
+
+        // Lock 딜레이 처리
+        if (IsGrounded())
+        {
+            _lockTimer += Time.deltaTime;
+            if (_lockTimer >= _lockDelay) Lock();
+        }
+        else
+            _lockTimer = 0f;
+    }
+
+    /** 바닥에 닿아있는 지 체크 **/
+    bool IsGrounded()
+    {
+        transform.position += Vector3.down;
+        bool isValid = Board.Instance.IsValidPosition(transform);
+        transform.position -= Vector3.down;
+
+        return !isValid;
+    }
+
+    /** 좌우 이동 핸들러 **/
+    void HandleMoveInput()
+    {
+        // 현재 입력값 구하기
+        Vector2 inputVec = _input.Gameplay.Move.ReadValue<Vector2>();
+        int x = (int)Mathf.Round(inputVec.x);
+
+        // 방향이 바뀌었을 때
+        if (x != _prevX)
+        {
+            if (x != 0)
+            {
+                // 즉시 이동 (다음 이동은 das 딜레이 이후)
+                Move(new Vector3(x, 0, 0));
+                _moveTimer = Time.time + _dasDelay;
+            }
+
+            // 상태 저장
+            _prevX = x;
+        }
+        // 방향은 안 바꿨지만 키는 계속 누르고 있을 때
+        else if (x != 0)
+        {
+            // 타이머에 맞춰서 이동
+            if (Time.time > _moveTimer)
+            {
+                Move(new Vector3(x, 0, 0));
+                _moveTimer = Time.time + _arrDelay;
+            }
+        }
+    }
+
+    /** 소프트 드롭 핸들러 **/
+    void HandleSoftDropInput()
+    {
+        bool isPressed = _input.Gameplay.SoftDrop.IsPressed();
+
+        if (isPressed)
+        {
+            // 처음 눌렸거나, 타이머가 다 됐을 때
+            if (!_isSoftDropping || Time.time > _softDropTimer)
+            {
+                Move(Vector3.down);
+                _softDropTimer = Time.time + _softDropSpeed;
+                _lastFallTime = Time.time;
+                _isSoftDropping = true;
+            }
+            else
+                _isSoftDropping = false;
+        }
     }
 
     /** 이벤트 등록 **/
     void OnEnable()
     {
         _input.Enable();
-        _input.Gameplay.Move.performed += OnMovePerformed;
+        //_input.Gameplay.Move.performed += OnMovePerformed;
         _input.Gameplay.RotateLeft.performed += OnRotateLeftPerformed;
         _input.Gameplay.RotateRight.performed += OnRotateRightPerformed;
-        _input.Gameplay.SoftDrop.performed += OnSoftDropPerformed;
+        //_input.Gameplay.SoftDrop.performed += OnSoftDropPerformed;
         _input.Gameplay.HardDrop.performed += OnHardDropPerformed;
         _input.Gameplay.Hold.performed += OnHoldPerformed;
     }
@@ -85,10 +175,10 @@ public class Tetromino : MonoBehaviour
     /** 이벤트 해제 **/
     void OnDisable()
     {
-        _input.Gameplay.Move.performed -= OnMovePerformed;
+        //_input.Gameplay.Move.performed -= OnMovePerformed;
         _input.Gameplay.RotateLeft.performed -= OnRotateLeftPerformed;
         _input.Gameplay.RotateRight.performed -= OnRotateRightPerformed;
-        _input.Gameplay.SoftDrop.performed -= OnSoftDropPerformed;
+        //_input.Gameplay.SoftDrop.performed -= OnSoftDropPerformed;
         _input.Gameplay.HardDrop.performed -= OnHardDropPerformed;
         _input.Gameplay.Hold.performed -= OnHoldPerformed;
         _input.Disable();
@@ -155,9 +245,10 @@ public class Tetromino : MonoBehaviour
         if (!Board.Instance.IsValidPosition(transform))
         {
             transform.position -= pos;
-
-            if (pos == Vector3.down) Lock();
         }
+        else
+            // 이동에 성공했을 땐 리셋
+            _lockTimer = 0f;
     }
 
     /** 테트로미노 회전 함수 **/
