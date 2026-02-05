@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Spawner : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Spawner : MonoBehaviour
     public GameObject tetrominoPrefab;
 
     // 7-Bag 데이터
-    Stack<TetrominoType> _bag = new Stack<TetrominoType>();
+    Queue<TetrominoType> _bag = new Queue<TetrominoType>();
 
     // 홀드 데이터
     TetrominoType _heldType;    // 홀드된 테트로미노 타입
@@ -30,6 +31,10 @@ public class Spawner : MonoBehaviour
 
     void Start()
     {
+        // 7-Bag 초기화
+        RefillBag();
+        RefillBag();
+
         SpawnNextTetromino();
     }
 
@@ -57,10 +62,10 @@ public class Spawner : MonoBehaviour
     /** 테트로미노 랜덤 생성 함수 **/
     TetrominoType GetRandomTetromino()
     {
-        // 리스트 안에 아무것도 없으면 리필
-        if (_bag.Count == 0) RefillBag();
+        // 7개마다 리필
+        if (_bag.Count <= 7) RefillBag();
 
-        return _bag.Pop();
+        return _bag.Dequeue();
     }
 
     /** 7-Bag 리필 함수 **/
@@ -87,8 +92,9 @@ public class Spawner : MonoBehaviour
             (tempArray[k], tempArray[n]) = (tempArray[n], tempArray[k]);
         }
 
-        // 셔플된 배열을 스택으로 변환
-        _bag = new Stack<TetrominoType>(tempArray);
+        // 큐에 삽입
+        foreach (var type in tempArray)
+            _bag.Enqueue(type);
     }
 
     /** 현재 테트로미노 홀드 함수 **/
