@@ -10,6 +10,7 @@ public class Tetromino : MonoBehaviour
     TetrisInput _input;     // 인풋 시스템
     float _lastFallTime;    // 마지막 낙하 시간
     Ghost _ghost;           // 고스트 테트로미노
+    int _rotationIndex = 0; // 현재 회전 상태(0: 스폰, 1: R, 2: 180, 3: L)
 
     [Header("조작감 설정")]
     [SerializeField] float _dasDelay = 0.2f;        // DAS
@@ -36,6 +37,7 @@ public class Tetromino : MonoBehaviour
     public void Initialize(TetrominoType tetromino)
     {
         // 데이터 초기화
+        _rotationIndex = 0;
         data = new TetrominoData { type = tetromino };
         data.Initialize();
 
@@ -164,10 +166,8 @@ public class Tetromino : MonoBehaviour
     void OnEnable()
     {
         _input.Enable();
-        //_input.Gameplay.Move.performed += OnMovePerformed;
         _input.Gameplay.RotateLeft.performed += OnRotateLeftPerformed;
         _input.Gameplay.RotateRight.performed += OnRotateRightPerformed;
-        //_input.Gameplay.SoftDrop.performed += OnSoftDropPerformed;
         _input.Gameplay.HardDrop.performed += OnHardDropPerformed;
         _input.Gameplay.Hold.performed += OnHoldPerformed;
     }
@@ -175,10 +175,8 @@ public class Tetromino : MonoBehaviour
     /** 이벤트 해제 **/
     void OnDisable()
     {
-        //_input.Gameplay.Move.performed -= OnMovePerformed;
         _input.Gameplay.RotateLeft.performed -= OnRotateLeftPerformed;
         _input.Gameplay.RotateRight.performed -= OnRotateRightPerformed;
-        //_input.Gameplay.SoftDrop.performed -= OnSoftDropPerformed;
         _input.Gameplay.HardDrop.performed -= OnHardDropPerformed;
         _input.Gameplay.Hold.performed -= OnHoldPerformed;
         _input.Disable();
@@ -192,13 +190,6 @@ public class Tetromino : MonoBehaviour
     }
 
     /**** 콜백 함수 ****/
-    /** 좌우 이동 **/
-    void OnMovePerformed(InputAction.CallbackContext ctx)
-    {
-        Vector2 input = ctx.ReadValue<Vector2>();
-        if (Mathf.Abs(input.x) > 0.5f) 
-            Move(new Vector3(Mathf.Sign(input.x), 0, 0));
-    }
     /** 회전 **/
     void OnRotateRightPerformed(InputAction.CallbackContext ctx)
     {
@@ -207,13 +198,6 @@ public class Tetromino : MonoBehaviour
     void OnRotateLeftPerformed(InputAction.CallbackContext ctx)
     {
         Rotate(90);
-    }
-    /** 소프트 드롭 **/
-    void OnSoftDropPerformed(InputAction.CallbackContext ctx)
-    {
-        // 한 칸 아래로 이동 후 타이머 리셋
-        Move(Vector3.down);
-        _lastFallTime = Time.time;
     }
     /** 하드 드롭 **/
     void OnHardDropPerformed(InputAction.CallbackContext ctx)
@@ -254,13 +238,54 @@ public class Tetromino : MonoBehaviour
     /** 테트로미노 회전 함수 **/
     void Rotate(float angle)
     {
+        int originalRotation = _rotationIndex;
+
+        // 회전 인덱스 계산
+        // 1: 왼쪽, -1: 오른쪽
+        int direction = (angle < 0) ? 1 : -1;
+        int newRotation = (_rotationIndex + direction + 4) % 4;
+
+        // 회전 여부 판단
         transform.Rotate(0, 0, angle);
-        if (!Board.Instance.IsValidPosition(transform))
+        if (TestWallKicks(_rotationIndex, newRotation))
         {
-            // TODO: SRS(Wall Kick) 구현 예정
-            // 유효하지 않으면 원상복구
-            transform.Rotate(0, 0, -angle);
+            // 성공
+            _rotationIndex = newRotation;
+            _lockTimer = 0f;
         }
+        else
+            // 실패
+            transform.Rotate(0, 0, -angle);
+    }
+
+    /** Wall Kick 유효성 검사 **/
+    bool TestWallKicks(int rotationIndex, int rotationDirection)
+    {
+        // Wall Kick 데이터 불러오기
+        int wallKickIndex = SRSData.GetWallKickIndex(rotationIndex, rotationDirection);
+        Vector2Int[] tests = null;
+
+        // I는 다른 데이터 사용, O는 바로 리턴
+        if (data.type == TetrominoType.I)
+            tests = SRSData.WallKicksI[wallKickIndex];
+        else if (data.type == TetrominoType.O)
+            return true;
+        else
+            tests = SRSData.WallKicksOther[wallKickIndex];
+
+        // 회전 테스트
+        for (int i = 0; i < tests.Length; i++)
+        {
+            Vector2Int translation = tests[i];
+            transform.position += new Vector3(translation.x, translation.y, 0);
+
+            if (Board.Instance.IsValidPosition(transform))
+                return true;
+            else
+                transform.position -= (Vector3Int)translation;
+        }
+
+        return false;
     }
 
     /** 테트로미노 고정 함수 **/
