@@ -7,7 +7,7 @@ public class Board : MonoBehaviour
     [Header("기본 설정")]
     // 테트리스 표준 규격
     public int width = 10;
-    public int height = 20;
+    public int height = 40;
     // 블록 프리팹
     public GameObject blockPrefab;
 

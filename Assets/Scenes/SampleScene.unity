@@ -872,7 +872,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
   width: 10
-  height: 20
+  height: 40
   blockPrefab: {fileID: 2863798851471871651, guid: f4370ec95f84ea44ab9da97c0c81740f, type: 3}
 --- !u!1 &1548059243
 GameObject:
