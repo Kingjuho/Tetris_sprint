@@ -46,6 +46,10 @@ public class Spawner : MonoBehaviour
 
         // 랜덤 테트로미노 생성
         SpawnTetromino(GetRandomTetromino());
+
+        // Next 블록 UI 갱신
+        if (UIManager.Instance != null)
+            UIManager.Instance.UpdateNext(GetNextBlockPreviews());
     }
 
     /** 테트로미노 스폰 함수 **/
@@ -124,5 +128,12 @@ public class Spawner : MonoBehaviour
 
         // 홀드 불가 상태로 변경
         _canHold = false;
+
+        // Hold 블록 UI 갱신
+        if (UIManager.Instance != null)
+            UIManager.Instance.UpdateHold(_heldType);
     }
+
+    /** Next 블럭 5개 조회 함수 **/
+    public List<TetrominoType> GetNextBlockPreviews() => _bag.Take(5).ToList();
 }
