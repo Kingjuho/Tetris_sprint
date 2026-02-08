@@ -39,6 +39,9 @@ public class Spawner : MonoBehaviour
     /** 다음 테트로미노 스폰 함수 **/
     public void SpawnNextTetromino()
     {
+        // 비활성화 상태면 리턴
+        if (!this.enabled) return;
+
         // 홀드 가능 상태로 변경
         _canHold = true;
 

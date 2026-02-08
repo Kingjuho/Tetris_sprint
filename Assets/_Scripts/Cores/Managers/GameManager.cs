@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
     /** 게임 오버 **/
     public void GameOver()
     {
-        _isPlaying = false;
+        GameStop();
 
         // UI 갱신
         if (UIManager.Instance != null)
@@ -85,13 +85,28 @@ public class GameManager : MonoBehaviour
     /** 게임 승리 **/
     void Victory()
     {
-        _isPlaying = false;
+        GameStop();
 
         if (Spawner.Instance != null)
             Spawner.Instance.enabled = false;
 
         if (UIManager.Instance != null)
             UIManager.Instance.Victory(_timer);
+    }
+
+    /** 게임 정지 **/
+    void GameStop()
+    {
+        _isPlaying = false;
+
+        // 스포너 비활성화
+        if (Spawner.Instance != null)
+            Spawner.Instance.enabled = false;
+
+        // 현재 떨어지고 있는 블럭 비활성화 (중력/입력 차단)
+        Tetromino current = FindFirstObjectByType<Tetromino>();
+        if (current != null)
+            current.enabled = false;
     }
 
     /** 지운 줄 개수 갱신 **/
