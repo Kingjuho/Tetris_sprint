@@ -16,6 +16,8 @@
 ### 라이센스 및 출처 표기
 * 크레딧 화면이 없으니 Readme.md에 제작자 요청을 준수하여 작성 
 ## 스크린샷
-![Gameplay](./Images/Ingame.png)
+![InGame](./Images/InGame.png)
+
 ![GameClear](./Images/GameClear.png)
+
 ![GameOver](./Images/GameOver.png)
