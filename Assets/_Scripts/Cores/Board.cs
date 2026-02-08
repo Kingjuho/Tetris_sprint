@@ -58,6 +58,8 @@ public class Board : MonoBehaviour
     /** 줄 삭제 메인 함수 **/
     public void ClearLines()
     {
+        int clearedLines = 0;
+
         // 바닥부터 모든 행 검사
         for (int y = 0; y < height; y++)
         {
@@ -65,9 +67,16 @@ public class Board : MonoBehaviour
             {
                 ClearLine(y);
                 MoveRowsDown(y);
+
+                clearedLines++;
                 y--;
             }
         }
+
+        // 게임 매니저에게 지운 줄 개수 전달
+        if (clearedLines > 0)
+            if (GameManager.Instance != null)
+                GameManager.Instance.OnLinesCleared(clearedLines);
     }
 
     /** 특정 행이 꽉 찼는지 검사 **/

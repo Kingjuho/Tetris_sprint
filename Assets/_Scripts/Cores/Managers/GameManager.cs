@@ -10,9 +10,11 @@ public class GameManager : MonoBehaviour
 
     [Header("설정")]
     public float restartHoldTime = 1.0f;    // 리스타트
+    public int targetLines = 40;            // 목표 줄 개수
 
     private float _timer;                   // 타이머
     private bool _isPlaying = false;        // 현재 상태
+    private int _clearedLines = 0;          // 총 지워진 줄 개수
     private float _restartTimer = 0f;       // 리스타트 타이머
 
     private void Awake()
@@ -51,9 +53,15 @@ public class GameManager : MonoBehaviour
         _isPlaying = false;
         if (Spawner.Instance != null) Spawner.Instance.enabled = false;
 
-        // 카운트다운 UI 갱신
+        // UI 갱신
         if (UIManager.Instance != null)
+        {
+            // 남은 줄 개수
+            UIManager.Instance.UpdateLineCount(targetLines);
+
+            // 카운트 다운
             yield return StartCoroutine(UIManager.Instance.Countdown());
+        }
 
         // 게임 시작
         _isPlaying = true;
@@ -72,6 +80,35 @@ public class GameManager : MonoBehaviour
         // UI 갱신
         if (UIManager.Instance != null)
             UIManager.Instance.GameOver();
+    }
+
+    /** 게임 승리 **/
+    void Victory()
+    {
+        _isPlaying = false;
+
+        if (Spawner.Instance != null)
+            Spawner.Instance.enabled = false;
+
+        if (UIManager.Instance != null)
+            UIManager.Instance.Victory(_timer);
+    }
+
+    /** 지운 줄 개수 갱신 **/
+    public void OnLinesCleared(int lines)
+    {
+        // 게임 중이 아니면 리턴
+        if (!_isPlaying) return;
+
+        _clearedLines += lines;
+
+        // UI 갱신
+        if (UIManager.Instance != null)
+            UIManager.Instance.UpdateLineCount(targetLines - _clearedLines);
+
+        // 승리 조건 체크
+        if (_clearedLines >= targetLines)
+            Victory();
     }
 
     /** 타이머 UI 변경 함수 호출용 **/

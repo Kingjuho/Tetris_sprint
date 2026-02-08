@@ -12,9 +12,13 @@ public class UIManager : MonoBehaviour
     public TetrominoViewer holdViewer;
     public TetrominoViewer[] nextViewers;
 
-    public Text timerText;                  // 타이머 텍스트
-    public Text countdownText;              // 카운트다운 텍스트
-    public GameObject gameOverPanel;        // 게임 오버 패널
+    [Header("UI 설정")]
+    [SerializeField] Text timerText;                // 타이머 텍스트
+    [SerializeField] Text countdownText;            // 카운트다운 텍스트
+    [SerializeField] Text clearTimeText;            // 클리어타임 텍스트
+    [SerializeField] Text lineCountText;            // 남은 줄 텍스트
+    [SerializeField] GameObject victoryPanel;       // 승리 패널
+    [SerializeField] GameObject gameOverPanel;      // 게임 오버 패널
 
 
 
@@ -48,13 +52,16 @@ public class UIManager : MonoBehaviour
     /** 타이머 UI 갱신 **/
     public void UpdateTimer(float timer)
     {
-        // 분, 초, 밀리초
-        int minutes = Mathf.FloorToInt(timer / 60F);
-        int seconds = Mathf.FloorToInt(timer % 60F);
-        int milliseconds = Mathf.FloorToInt((timer * 100F) % 100F);
-
         // 포맷팅
-        timerText.text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+        if (timerText != null)
+            timerText.text = TimerFormat(timer);
+    }
+
+    /** 남은 줄 개수 UI 갱신 **/
+    public void UpdateLineCount(int count)
+    {
+        if (lineCountText != null)
+            lineCountText.text = $"Remaining: {count.ToString()}";
     }
 
     /** 카운트다운 코루틴 **/
@@ -83,5 +90,25 @@ public class UIManager : MonoBehaviour
     {
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
+    }
+
+    /** 게임 승리 UI 갱신 **/
+    public void Victory(float finalTime)
+    {
+        if (victoryPanel != null)
+            victoryPanel.SetActive(true);
+
+        if (clearTimeText != null)
+            clearTimeText.text = TimerFormat(finalTime);
+    }
+
+    /** 타이머 포맷 함수 **/
+    public string TimerFormat(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60F);
+        int seconds = Mathf.FloorToInt(time % 60F);
+        int milliseconds = Mathf.FloorToInt((time * 100F) % 100F);
+
+        return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
     }
 }
