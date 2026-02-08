@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
     public void UpdateLineCount(int count)
     {
         if (lineCountText != null)
-            lineCountText.text = $"Remaining: {count.ToString()}";
+            lineCountText.text = $"Remaining: {Mathf.Clamp(count, 0, 999).ToString()}";
     }
 
     /** 카운트다운 코루틴 **/
