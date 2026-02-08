@@ -34,8 +34,6 @@ public class Spawner : MonoBehaviour
         // 7-Bag 초기화
         RefillBag();
         RefillBag();
-
-        SpawnNextTetromino();
     }
 
     /** 다음 테트로미노 스폰 함수 **/

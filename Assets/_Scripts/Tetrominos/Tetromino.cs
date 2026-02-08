@@ -71,6 +71,18 @@ public class Tetromino : MonoBehaviour
         _ghost = ghostObj.AddComponent<Ghost>();
 
         _ghost.Initialize(this);
+
+        // 게임 오버 체크
+        if (!Board.Instance.IsValidPosition(transform))
+        {
+            Debug.Log("게임 오버");
+            this.enabled = false;
+
+            if (GameManager.Instance != null)
+                GameManager.Instance.GameOver();
+
+            Destroy(gameObject);
+        }
     }
 
     void Update()
